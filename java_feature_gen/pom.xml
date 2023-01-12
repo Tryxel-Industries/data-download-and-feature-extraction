@@ -2,14 +2,72 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>no.tryxelindustries</groupId>
   <artifactId>java_feature_gen</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <name>Archetype - java_feature_gen</name>
   <url>http://maven.apache.org</url>
 
 
+  <version>1.0</version>
+  <packaging>jar</packaging>
 
+  <properties>
+      <maven.compiler.source>19</maven.compiler.source>
+      <maven.compiler.target>19</maven.compiler.target>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+      <main.class>${project.groupId}.${project.artifactId}.Main</main.class>
+
+  </properties>
+
+  <dependencies>
+  	<dependency>
+		<groupId>org.projectlombok</groupId>
+		<artifactId>lombok</artifactId>
+		<version>1.18.24</version>
+		<scope>provided</scope>
+	</dependency>
+
+
+    <dependency>
+        <groupId>edu.stanford.nlp</groupId>
+        <artifactId>stanford-corenlp</artifactId>
+        <version>4.4.0</version>
+    </dependency>
+    <dependency>
+        <groupId>edu.stanford.nlp</groupId>
+        <artifactId>stanford-corenlp</artifactId>
+        <version>4.4.0</version>
+        <classifier>models</classifier>
+    </dependency>
+
+
+  </dependencies>
+<build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+              <phase>verify</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+        <mainClass>${main.class}</mainClass>
+          <!-- optional -->
+          <environmentVariables>
+            <LANG>en_US</LANG>
+          </environmentVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 
 </project>
