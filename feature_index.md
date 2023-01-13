@@ -1,4 +1,6 @@
 # Feature index
+notes:
+Husk named enty recognition for embedding ai's en så "Per liker ikker kari" kan feedes inn som "PERSON liker ikke PERSON" så sjekker man om enty 1 og 2 matcher etterpå. da ungår vi problemer med å må forholde oss til navn i embeding spacet 
 
 ----- 
 ## Java features:

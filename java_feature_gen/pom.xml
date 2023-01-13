@@ -19,6 +19,8 @@
 
       <main.class>${project.groupId}.${project.artifactId}.Main</main.class>
 
+      <slf4j.version>1.7.5</slf4j.version>
+
   </properties>
 
   <dependencies>
@@ -42,6 +44,17 @@
         <classifier>models</classifier>
     </dependency>
 
+
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>${slf4j.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-simple</artifactId>
+    <version>${slf4j.version}</version>
+</dependency>
 
   </dependencies>
 <build>
