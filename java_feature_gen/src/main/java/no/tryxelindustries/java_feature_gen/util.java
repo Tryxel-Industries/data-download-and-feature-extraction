@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class util {
 
-    public static void showTextWithAnno(List<? extends Object> text, List<? extends Object> annotations){
+    public static void showTextWithAnno(List<? extends Object> text, List<? extends Object> annotations) {
         int maxWitdth = 150;
 
         StringBuilder fullBuilder = new StringBuilder();
@@ -16,11 +16,12 @@ public class util {
         int currentLineLength = 0;
         for (int i = 0; i < text.size(); i++) {
             String word = text.get(i).toString();
-            String annotation = annotations.get(i).toString();
-            int usedWidth = Math.max(word.length(),annotation.length());
-            String formatS = "%-"+ usedWidth + "s ";
+            Object anno = annotations.get(i);
+            String annotation = anno == null ? "null" : anno.toString();
+            int usedWidth = Math.max(word.length(), annotation.length());
+            String formatS = "%-" + usedWidth + "s ";
 
-            if (usedWidth+1 + currentLineLength > maxWitdth){
+            if (usedWidth + 1 + currentLineLength > maxWitdth) {
                 fullBuilder.append(textLineBuilder);
                 fullBuilder.append("\n");
                 fullBuilder.append(annotationLineBuilder);
@@ -33,7 +34,7 @@ public class util {
             textLineBuilder.append(String.format(formatS, word));
             annotationLineBuilder.append(String.format(formatS, annotation));
 
-            currentLineLength += usedWidth+1;
+            currentLineLength += usedWidth + 1;
         }
         fullBuilder.append(textLineBuilder);
         fullBuilder.append("\n");

@@ -35,7 +35,7 @@ public class TextPreprocessing {
 //        var last_s = document.sentences().get(document.sentences().size()-1);
 
 //        util.showTextWithAnno(document.tokens().stream().map(CoreLabel::word).toList(), document.tokens().stream().map(CoreLabel::tag).toList());
-        util.showTextWithAnno(document.tokens().stream().map(CoreLabel::word).toList(), document.tokens().stream().map(CoreLabel::ner).toList());
+//        util.showTextWithAnno(document.tokens().stream().map(CoreLabel::word).toList(), document.tokens().stream().map(CoreLabel::ner).toList());
 //        util.showTextWithAnno(document.tokens().stream().map(CoreLabel::word).toList(), document.tokens().stream().map(CoreLabel::lemma).toList());
 //        System.out.println(last_s.lemmas());
 //        System.out.println(last_s.nerTags());
@@ -69,11 +69,11 @@ public class TextPreprocessing {
         never: ignore newline
         two: when 2 or more newlines are encountered
          */
-        props.setProperty("ner.combinationMode","HIGH_RECALL");
+        props.setProperty("ssplit.newlineIsSentenceBreak","two");
     }
 
     private void setNamedEntityRecognitionProps(Properties props){
 
-        props.setProperty("ner.combinationMode","");
+        props.setProperty("ner.combinationMode","HIGH_RECALL");
     }
 }
