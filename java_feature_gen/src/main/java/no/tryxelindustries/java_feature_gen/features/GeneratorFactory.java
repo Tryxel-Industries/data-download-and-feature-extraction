@@ -22,14 +22,18 @@ public class GeneratorFactory {
             case POSITIVE_OPINION_WORDS -> null;
             case NUMBERS -> new NumberCount();
             case EXCLAMATION_AND_QUESTION_MARKS -> new ExclamationsCount();
-            case QUOTATION_MARKS -> null;
-            case WORD_COUNT -> null;
+            case QUOTATION_MARKS -> new QuotationCount();
+            case WORD_COUNT -> new WordCount();
             case DIVISIVE_TOPICS -> null;
             case EFFECT_WORD_SUM -> null;
             case CAPITALIZED_WORDS -> new CapitalizedWordCount();
             case INTENSIFIER_ADVERBS -> null;
-            case EMPHASIS -> null;
-            case GENERALISATION -> null;
+            case EMPHASIS -> new MPQAEmphasisTermFrequency();
+            case RHETORICAL_QUESTIONS -> new MPQARhetoricalQuestionsTermFrequency();
+            case GENERALISATION -> new MPQAGeneralizationTermFrequency();
+            case INCONSISTENCY -> new MPQAInconsistencyTermFrequency();
+            case CONDITIONALS -> new MPQAConditionalsTermFrequency();
+            case NECESSITY -> new MPQANecessityTermFrequency();
         };
     }
 }

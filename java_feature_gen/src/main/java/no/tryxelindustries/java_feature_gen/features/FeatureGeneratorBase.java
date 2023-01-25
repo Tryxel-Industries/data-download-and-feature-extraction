@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 public abstract class FeatureGeneratorBase {
     private static final Path lexiconBasePath = Path.of("./lexicons");
 
-    private static DebugLogger dbl = new DebugLogger(true);
+    protected static DebugLogger dbl = new DebugLogger(true);
 
     protected List<LexiconEntry> readLexiconFile(String fileName) {
         List<LexiconEntry> lexiconEntries = new ArrayList<>();
@@ -89,6 +89,7 @@ public abstract class FeatureGeneratorBase {
         return new FeatureResult(annotationMap, termCount);
 
     }
+
 
     public abstract FeatureResult getFeatureValue(CoreDocument document);
 
