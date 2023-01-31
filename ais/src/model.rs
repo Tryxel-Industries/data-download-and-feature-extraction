@@ -1,6 +1,4 @@
-use std::intrinsics::sqrtf64;
 use std::iter::Map;
-use std::slice::range;
 use crate::enums::{Feature, TrueFalseLabel};
 use crate::enums::TrueFalseLabel::False;
 
@@ -34,15 +32,15 @@ pub trait SimpleDistance {
 impl SimpleDistance for EmbeddingElement {
     fn euclidean_distance(&self, other: &EmbeddingElement) -> f64 {
         let mut roll_sum: f64 = 0.0;
-        for i in ..self.embedding.len() {
-            roll_sum += (self.embedding.get(&i) - other.embedding.get(&i)) ^ 2;
+        for i in 0..self.embedding.len() {
+            roll_sum += (self.embedding.get(i).unwrap() - other.embedding.get(i).unwrap()).powi(2);
         }
         return roll_sum.sqrt();
     }
 
     fn is_within_box_distance_or_whatever_it_is_called(&self, other: &EmbeddingElement, box_distance: &f64) -> bool {
-        for i in ..self.embedding.len() {
-            let diff: f64 = self.embedding.get(&i) - other.embedding.get(&i);
+        for i in 0..self.embedding.len() {
+            let diff: f64 = self.embedding.get(i).unwrap() - other.embedding.get(i).unwrap();
             if diff.abs() > *box_distance {
                 return false;
             }
