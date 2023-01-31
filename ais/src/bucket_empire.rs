@@ -16,7 +16,7 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
     //
     //
 
-    // println!("in: {:?}", lists);
+    println!("in: {:?}", lists);
 
     let mut found_matches: Vec<usize> = Vec::new();
 
@@ -152,6 +152,20 @@ impl BucketKnight {
         return None;
     }
 
+    pub fn get_buckets_in_range(&self, dimensional_value: &f64, range: f64) -> Vec<&Bucket> {
+        let value_lb = dimensional_value.clone()-range;
+        let value_ub = dimensional_value.clone()+range;
+        let mut  ret: Vec<&Bucket> = Vec::new();
+
+        for bucket in self.buckets.iter() {
+            if bucket.end_value > value_lb && bucket.end_value <= value_ub {
+                ret.push(&bucket)
+            }else if bucket.start_value > value_lb && bucket.start_value <= value_ub {
+                ret.push(&bucket)
+            }
+        }
+        return ret;
+    }
     pub fn get_bucket_mut(&mut self, dimensional_value: &f64) -> Option<&mut Bucket> {
         let value = dimensional_value;
         for bucket in self.buckets.iter_mut() {
@@ -231,7 +245,8 @@ impl<T> BucketKing<T> {
     pub fn get_potential_matches_indexes(&self, value: &T) -> Option<Vec<usize>> {
         let value_vec = (self.value_fn)(value);
         let ret: Vec<Vec<usize>> = self.dimensional_knights.iter()
-            .map(|k| k.get_bucket(value_vec.get(k.dimension).unwrap()).unwrap())
+            // .map(|k| k.get_bucket(value_vec.get(k.dimension).unwrap()).unwrap())
+            .map(|k| k.get_buckets_in_range(value_vec.get(k.dimension).unwrap(),0.7)).flat_map(|x1| x1.into_iter())
             .map(|bkt| bkt.bucket_contents.iter().map(|x| x.index.clone()).collect::<Vec<usize>>()).collect();
 
 
