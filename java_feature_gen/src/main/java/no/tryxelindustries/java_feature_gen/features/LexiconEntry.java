@@ -4,24 +4,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LexiconEntry {
-    public final String       baseWord;
-    public final List<String> splitWord = new ArrayList<>();
-    public final Boolean      isMultiword;
+    private static final boolean      includeSeparators = false;
+    public final         String       baseWord;
+    public final         List<String> splitWord         = new ArrayList<>();
+    public final         Boolean      isMultiword;
 
+
+    private void addMultiword(String base, String sep) {
+        String[] words = base.split(sep);
+
+        if (includeSeparators) {
+            for (String subWord : words) {
+                splitWord.add(subWord);
+                splitWord.add(sep);
+            }
+            if (splitWord.size() > 1 && splitWord.get(splitWord.size() - 1).equals(sep)) {
+                splitWord.remove(splitWord.size() - 1);
+            }
+        } else {
+            splitWord.addAll(List.of(words));
+        }
+    }
 
     public LexiconEntry(String baseWord) {
         this.baseWord = baseWord;
         if (baseWord.contains("-")) {
-            int splitAt = baseWord.indexOf("-");
-
-            splitWord.add(baseWord.substring(0, splitAt));
-            splitWord.add("-");
-            splitWord.add(baseWord.substring(splitAt + 1));
+            addMultiword(baseWord, "-");
             this.isMultiword = true;
         } else if (baseWord.contains(" ")) {
-            int splitAt = baseWord.indexOf(" ");
-            splitWord.add(baseWord.substring(0, splitAt));
-            splitWord.add(baseWord.substring(splitAt + 1));
+            addMultiword(baseWord, " ");
+            this.isMultiword = true;
+        } else if (baseWord.contains("_")) {
+            addMultiword(baseWord, "_");
             this.isMultiword = true;
         } else {
             isMultiword = false;

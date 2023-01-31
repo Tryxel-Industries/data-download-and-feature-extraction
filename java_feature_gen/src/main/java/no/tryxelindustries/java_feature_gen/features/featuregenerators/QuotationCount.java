@@ -17,7 +17,7 @@ public class QuotationCount extends FeatureGeneratorBase {
         List<String> annotation = new ArrayList<>();
 
 
-        dbl.log(document.quotes().size());
+//        dbl.log(document.quotes().size());
         Pattern pattern = Pattern.compile("[!|?]{2,}");
 
         double numberOfExclamations = 0.0;

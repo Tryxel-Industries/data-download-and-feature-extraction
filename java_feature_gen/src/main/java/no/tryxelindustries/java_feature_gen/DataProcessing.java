@@ -36,10 +36,11 @@ public class DataProcessing {
 
         CoreDocument document = pipeline.processToCoreDocument(rawData);
 
-        NewsEntry entry = new NewsEntry(-1, rawData, document, -1);
+        NewsEntry entry = new NewsEntry(-1, "bipbop", rawData, document, -1);
         entry.setSentences(document.sentences()
                                    .stream()
                                    .map(CoreSentence::text)
+                                   .filter(s -> s.length() > 1)
                                    .toList()); // for the embedding and stuff
 
         return entry;

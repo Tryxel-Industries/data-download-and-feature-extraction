@@ -11,9 +11,7 @@ public class GeneratorFactory {
             case SWEAR_WORDS -> null;
             case FIRST_PERSON_PRONOUNS -> new FirstPersonPronounsTermFrequency();
             case SECOND_PERSON_PRONOUNS -> new SecondPersonPronounsTermFrequency();
-            case MODAL_ADVERBS -> null;
-            case ACTION_ADVERBS -> null;
-            case MANNER_ADVERBS -> null;
+            case ACTION_ADVERBS -> new ActionAdverbsTermFrequency();
             case SUPERLATIVE_FORMS -> null;
             case COMPARATIVE_FORMS -> null;
             case STRONGLY_SUBJECTIVE_WORDS -> null;
