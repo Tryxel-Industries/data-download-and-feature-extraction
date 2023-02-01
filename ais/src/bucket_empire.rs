@@ -16,7 +16,7 @@ fn roll_comparison(lists: Vec<Vec<usize>>) -> Option<Vec<usize>> {
     //
     //
 
-    println!("in: {:?}", lists);
+    // println!("in: {:?}", lists);
 
     let mut found_matches: Vec<usize> = Vec::new();
 
@@ -152,18 +152,21 @@ impl BucketKnight {
         return None;
     }
 
-    pub fn get_buckets_in_range(&self, dimensional_value: &f64, range: f64) -> Vec<&Bucket> {
+    pub fn get_index_in_range(&self, dimensional_value: &f64, range: f64) -> Vec<usize> {
         let value_lb = dimensional_value.clone()-range;
         let value_ub = dimensional_value.clone()+range;
-        let mut  ret: Vec<&Bucket> = Vec::new();
+        let mut  ret: Vec<usize> = Vec::new();
 
         for bucket in self.buckets.iter() {
             if bucket.end_value > value_lb && bucket.end_value <= value_ub {
-                ret.push(&bucket)
+                ret.extend(bucket.bucket_contents.iter().map(|x1|x1.index).clone())
             }else if bucket.start_value > value_lb && bucket.start_value <= value_ub {
-                ret.push(&bucket)
+                ret.extend(bucket.bucket_contents.iter().map(|x1|x1.index).clone())
             }
         }
+
+        ret.sort();
+        // println!("ret size {:?}", ret.len());
         return ret;
     }
     pub fn get_bucket_mut(&mut self, dimensional_value: &f64) -> Option<&mut Bucket> {
@@ -246,8 +249,10 @@ impl<T> BucketKing<T> {
         let value_vec = (self.value_fn)(value);
         let ret: Vec<Vec<usize>> = self.dimensional_knights.iter()
             // .map(|k| k.get_bucket(value_vec.get(k.dimension).unwrap()).unwrap())
-            .map(|k| k.get_buckets_in_range(value_vec.get(k.dimension).unwrap(),0.7)).flat_map(|x1| x1.into_iter())
-            .map(|bkt| bkt.bucket_contents.iter().map(|x| x.index.clone()).collect::<Vec<usize>>()).collect();
+            // .map(|k| k.get_buckets_in_range(value_vec.get(k.dimension).unwrap(),0.7)).flat_map(|x1| x1.into_iter())
+            .map(|k| k.get_index_in_range(value_vec.get(k.dimension).unwrap(), 0.6)).collect();
+            // .inspect(|x2| println!("dim {:?} to {:?} <> {:?}",x2.start_value, x2.end_value, x2.bucket_contents))
+            // .map(|bkt| bkt.bucket_contents.iter().map(|x| x.index.clone()).collect::<Vec<usize>>()).collect();
 
 
         return roll_comparison(ret);
@@ -265,6 +270,14 @@ impl<T> BucketKing<T> {
             dimensional_knight.add_items(as_bucket_values);
 
         }
+
+     /*   self.dimensional_knights.iter().for_each(|x| {
+            println!("dim {:?}", x.dimension);
+            x.buckets.iter().for_each(|y|{
+                println!("{:?}", y.bucket_contents);
+                // println!("{:?}",y.bucket_contents.iter().map(|x1|x1.index).collect::<Vec<usize>>())
+            })
+        })*/
 
     }
 }
