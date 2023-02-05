@@ -2,24 +2,15 @@ package no.tryxelindustries.java_feature_gen;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.pipeline.CoreDocument;
-import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import no.tryxelindustries.java_feature_gen.datasets.readers.Kaggle;
 import no.tryxelindustries.java_feature_gen.enums.Feature;
-import no.tryxelindustries.java_feature_gen.features.FeatureGeneratorBase;
 import no.tryxelindustries.java_feature_gen.features.FeatureResult;
 import no.tryxelindustries.java_feature_gen.features.GeneratorFactory;
-import no.tryxelindustries.java_feature_gen.features.NewsEntry;
-import no.tryxelindustries.java_feature_gen.features.featuregenerators.CapitalizedWordCount;
-import no.tryxelindustries.java_feature_gen.features.featuregenerators.ExclamationsCount;
-import no.tryxelindustries.java_feature_gen.features.featuregenerators.FirstPersonPronounsTermFrequency;
-import no.tryxelindustries.java_feature_gen.features.featuregenerators.NumberCount;
+import no.tryxelindustries.java_feature_gen.entitys.NewsEntry;
 
-import java.beans.ExceptionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Main {
     private static DebugLogger dbl       = new DebugLogger(true);
@@ -28,24 +19,15 @@ public class Main {
     public static  String      txt2      = "U.S.A yeaahhh!!!!. i am confident that Bob rigged the ugandan election last tuesday. is this — real??????. really 100 000 dollas tells me no way any1 cold do that 360 kick-flip?. thight-lipped! .idk means I dont know - mine my opinion you yours opinion. if this ain't “posible” \"to\" 'tokenize' (good) for organizations e.g. c.i.a. nsa, federal bureau of investigation and other. Earlier today Josh Caplan at The Gateway Pundit posted on Gloria Allred\u2019s last ditch effort to swing the Alabama senate race to Democrat Doug Moore.\n\nWE CALLED IT! Gloria Allred Accuser **ADMITS** She Tampered With Roy Moore\u2019s Yearbook \u2018Signature\u2019 ";//(VIDEO)\n\nAllred dragged out discredited Moore accuser Beverly Nelson to Good Morning America to hit Judge Roy Moore one last time before Tuesday\u2019s vote.\n\nNelson admitted on ABC\u2019s \u201cGood Morning America\u201d on Friday that she tampered with and added \u201cnotes\u201d to what she claims is Moore\u2019s signature inside her yearbook.\n\nTRENDING: In Ukraine, \u201cThere\u2019s Something Happening There\u201d\n\nThe story is solid. The statements were made by Beverly Nelson this morning. The yearbook signature has been discredited as reported by ABC\u2019s GMA this morning.\n\nBut after we posted the story this morning Facebook shut down our story.\n\nThe far left website Politifact said our story was not accurate and Facebook the shut it down. No one will be able to see our story on Facebook.\n\nBreitbart wrote a similar post and it was also blocked by Facebook.\n\nFacebook is TRASH. pic.twitter.com/KHy5Qfykg6 \u2014 Gab: Free Speech Social Network (@getongab) December 8, 2017\n\nSo Facebook shut down the story on Judge Roy Moore\u2019s accuser.\n\nFacebook is picking sides.";
 
     public static void main(String[] args) {
-        var pp = new TextPreprocessing();
-        pp.testiTest(withQuote);
+        testKaggleGen();
+//        var pp = new TextPreprocessing();
+//        pp.testiTest(withQuote);
 //        testSimpleFeatureGen();
 //        testMultiFeatureGen();
 //        genJavaFeatures();
     }
 
-    public static void testMultiFeatureGen() {
-        DataProcessing processing = new DataProcessing(false);
-
-//        NewsEntry entry = processing.processNewsData(txt2);
-//        List<NewsEntry> newsEntries = new ArrayList<>(Collections.nCopies(100, entry));
-        List<NewsEntry> newsEntries = new ArrayList<>();
-
-        for (int i = 0; i < 1000; i++) {
-            newsEntries.add(processing.processNewsData(txt2));
-        }
-
+    private static Pipeline getFeaturePipeline() {
         List<Feature> featuresUsed = new ArrayList<>(List.of(Feature.FIRST_PERSON_PRONOUNS,
                                                              Feature.SECOND_PERSON_PRONOUNS,
                                                              Feature.NUMBERS,
@@ -60,13 +42,27 @@ public class Main {
                                                              Feature.CONDITIONALS,
                                                              Feature.NECESSITY));
 
-
         Pipeline pipe = new Pipeline(featuresUsed);
+        return pipe;
+    }
 
-        var res = newsEntries.parallelStream().map(pipe::runAll).toList();
+    public static void testKaggleGen() {
+        DataProcessing processing = new DataProcessing(false);
+
+        Kaggle kg = new Kaggle();
+        List<NewsEntry> kaggleEntries = kg.readDataset();
+        dbl.log("Processing news entries");
+        kaggleEntries.parallelStream().forEach(processing::processNewsEntry);
+
+
+        dbl.log("Processing news features");
+        var pipe = getFeaturePipeline();
+        var res = kaggleEntries.parallelStream().map(pipe::runAll).toList();
+
+        kg.writeDatasetEntries(res);
 
         var resEntry = res.get(0);
-        dbl.log(res);
+        dbl.log(resEntry);
         dbl.log(resEntry.getResultMap());
 
 

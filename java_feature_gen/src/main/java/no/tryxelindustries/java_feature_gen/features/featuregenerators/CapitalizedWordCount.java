@@ -22,7 +22,8 @@ public class CapitalizedWordCount extends FeatureGeneratorBase {
         double numberOfCapWords = 0.0;
         for (CoreLabel token : document.tokens()) {
             String word = token.word();
-            if (StringUtils.isAllUpperCase(word)) {
+            if (StringUtils.isAllUpperCase(word) && word.length() > 1) {
+                // check length to avoid I triggering
                 annotation.add("True");
                 numberOfCapWords += 1;
             } else {

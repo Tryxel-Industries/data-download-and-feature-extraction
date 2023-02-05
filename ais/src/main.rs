@@ -16,7 +16,6 @@ struct TestStruct{
     a: Vec<f64>,
 }
 fn main() {
-    //todo: fikse range på bøtte fetching
 
     println!("Hello, world!");
     let dims = 500;
