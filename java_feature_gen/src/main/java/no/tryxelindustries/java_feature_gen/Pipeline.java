@@ -3,9 +3,8 @@ package no.tryxelindustries.java_feature_gen;
 import no.tryxelindustries.java_feature_gen.enums.Feature;
 import no.tryxelindustries.java_feature_gen.features.FeatureGeneratorBase;
 import no.tryxelindustries.java_feature_gen.features.GeneratorFactory;
-import no.tryxelindustries.java_feature_gen.features.NewsEntry;
+import no.tryxelindustries.java_feature_gen.entitys.NewsEntry;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
