@@ -20,8 +20,9 @@ def get_epoch_time(time_obj):
 def get_earliest_wayback_url(url: str) -> object:
     try:
         wayback_api_url= f"http://archive.org/wayback/available?url={url}{ARCHIVE_EARLIEST}"
-
+        logging.debug(wayback_api_url)
         response = requests.get(wayback_api_url)
+        logging.debug(response)
         response_json = json.loads(response.content)
 
         response_json = response_json["archived_snapshots"]
@@ -32,25 +33,29 @@ def get_earliest_wayback_url(url: str) -> object:
     except:
         return None
 
-def crawl_news_article(url) -> "dict[str, any]":
+def crawl_news_article(url:str, all_wayback: bool) -> "dict[str, any]":
     
-    # news_article = crawl_link_article(url)
     news_article = None
-
+    if not all_wayback:
+        news_article = crawl_link_article(url)
     # If the news article could not be fetched from original website, fetch from archive if it exists.
     if news_article is None:
-        # print(f"{threading.get_native_id()}: Trying wayback for link {url}")
-        archive = get_earliest_wayback_url(url)
+        logging.debug(f"{threading.get_native_id()}: Trying wayback for link {url}")
+        if "web.archive.org" not in url:
+            archive = get_earliest_wayback_url(url)
+        else:
+            archive = url
         if archive is not None:
-            # print(f"Link {url} available on wayback!")
+            logging.debug(f"Available on wayback {archive} !")
             news_article = crawl_link_article(archive)
         else:
             pass
-            # print(f"Link {url} not available on wayback")
+            logging.debug(f"Not available on wayback \"{url}\"")
     return news_article
 
 def crawl_link_article(url: str):
-    user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+    # user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0'
+    user_agent= "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0"
     # url = "https://www.nrk.no/innlandet/flere-funksjonshemmede-foler-de-ikke-far-psykisk-helsehjelp-1.16253006"
     config = Config()
     config.browser_user_agent = user_agent
