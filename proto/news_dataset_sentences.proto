@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package java_feature_gen;
+
+option java_multiple_files = true;
+option java_package = "no.tryxelindustries.java_feature_gen.entitys.protos";
+option java_outer_classname = "DatasetSentenceProtos";
+
+
+message NewsEntrySentences{
+  int32 id = 1;
+  int64 publish_date = 2;
+  string label = 4;
+
+  repeated string sentences = 5;
+}
+
+message DatasetSentences{
+  string dataset_name = 1;
+  repeated NewsEntrySentences news_entries = 2;
+}

@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package java_feature_gen;
+
+option java_multiple_files = true;
+option java_package = "no.tryxelindustries.java_feature_gen.entitys.protos";
+option java_outer_classname = "DatasetSemanticFeaturesProtos";
+
+message NewsEntrySemanticFeatures{
+  int32 id = 1;
+  int64 publish_date = 2;
+
+  enum FeatureType{
+    WORD_COUNT = 0;
+    SWEAR_WORDS = 1;
+  }
+
+  message FeatureResult{
+    FeatureType type = 1;
+    double value = 2;
+
+  }
+
+  repeated FeatureResult result = 3;
+
+  string label = 4;
+}
+
+message DatasetSemanticFeatures{
+  string dataset_name = 1;
+  repeated NewsEntrySemanticFeatures news_entries = 2;
+}
