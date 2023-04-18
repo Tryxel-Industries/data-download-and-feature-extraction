@@ -1,6 +1,6 @@
 import json
 import os
-from typing import List
+from typing import List, Tuple
 
 import torch
 from tqdm import tqdm
@@ -109,27 +109,17 @@ def transform(articles: List[NewsArticle]) -> List[EmbeddedArticle]:
     return embeddedArticles
 
 
-def whiten_embeddings(embeddings: List[EmbeddedArticle]) -> List[EmbeddedArticle]:
-    d = 768
-    mu = 1
-    x = 1
-    np.cova
-    mean_vector = np.array(embeddings[0].embedding) * 1
-    for i in range(1, d):
-        mean_vector = (i / (i + 1)) * mean_vector + (i / (i + 1)) * np.array(embeddings[i].embedding)
-
+def whiten_embeddings(embeddings: List[EmbeddedArticle], desired_dims:int = None) -> np.array:
     embeddings = np.array([x for x in [y.embedding for y in embeddings]])
-
-    covariance_matrix = np.cov(embeddings)
-    for i in range(1, d):
-        covariance_matrix = (i / (i + 1)) * covariance_matrix + (i / (i + 1)) * (embeddings[i] - mean_vector).T @ (embeddings[i] - mean_vector)
-    U, L, U_T = np.linalg.svd(covariance_matrix)
-    
-    
-
-    mu = [x for x in embeddings]
-
-    pass
+    desired_dims =  embeddings.shape[1] if (desired_dims is None or desired_dims < 0 or desired_dims > embeddings.shape[1]) else desired_dims
+    print(desired_dims)
+    mu = np.mean(embeddings, axis=0, keepdims=True)
+    cov = np.cov(embeddings.T)
+    u, s, vh = np.linalg.svd(cov)
+    w = np.dot(u, np.diag(1 / np.sqrt(s)))
+    op = w.T @ cov @ w
+    print(len(op[op > 0.9]))
+    return (embeddings - mu) @ w[:, :desired_dims]
 
 
 def main():
@@ -143,5 +133,12 @@ def main():
         with open(out_fp, "w") as f:
             json.dump(embeddings, f)
 
+def dummy_data(num) -> List[EmbeddedArticle]:
+    embeddings = np.random.rand(num, 768)
+    return [EmbeddedArticle(NewsArticle(i, []), s) for i, s in enumerate(embeddings)]
 
-main()
+    
+        
+q = dummy_data(3)
+whitened = whiten_embeddings(q)
+print(np.cov(whitened))
