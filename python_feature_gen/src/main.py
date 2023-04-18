@@ -5,6 +5,7 @@ from typing import List
 import torch
 from tqdm import tqdm
 from transformers import BertConfig, BertModel, BertTokenizerFast
+import numpy as np
 
 out_dir_base_path = "./../data_out/"
 
@@ -53,7 +54,7 @@ def scan_for_untransformed_sentence_files():
     return ret
 
 
-def read_news_article_file(fp) -> [NewsArticle]:
+def read_news_article_file(fp) -> List[NewsArticle]:
     articles = []
     with open(fp, "r") as f:
         js_obj = json.load(f)
@@ -106,6 +107,29 @@ def transform(articles: List[NewsArticle]) -> List[EmbeddedArticle]:
             raise e
 
     return embeddedArticles
+
+
+def whiten_embeddings(embeddings: List[EmbeddedArticle]) -> List[EmbeddedArticle]:
+    d = 768
+    mu = 1
+    x = 1
+    np.cova
+    mean_vector = np.array(embeddings[0].embedding) * 1
+    for i in range(1, d):
+        mean_vector = (i / (i + 1)) * mean_vector + (i / (i + 1)) * np.array(embeddings[i].embedding)
+
+    embeddings = np.array([x for x in [y.embedding for y in embeddings]])
+
+    covariance_matrix = np.cov(embeddings)
+    for i in range(1, d):
+        covariance_matrix = (i / (i + 1)) * covariance_matrix + (i / (i + 1)) * (embeddings[i] - mean_vector).T @ (embeddings[i] - mean_vector)
+    U, L, U_T = np.linalg.svd(covariance_matrix)
+    
+    
+
+    mu = [x for x in embeddings]
+
+    pass
 
 
 def main():
