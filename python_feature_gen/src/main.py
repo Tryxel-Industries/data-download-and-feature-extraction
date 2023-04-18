@@ -6,32 +6,13 @@ import torch
 from tqdm import tqdm
 from transformers import BertConfig, BertModel, BertTokenizerFast
 
-out_dir_base_path = "./../data_out/"
-
-embedding_fn_pattern = "embedding_{}.json"
-
-
-class NewsArticle:
-    def __init__(self, id: int, sentences: List[str]):
-        self.sentences = sentences
-        self.id = id
+from datasets.kaggle_dataset import KaggleDataset
+from entitys import NewsArticle, EmbeddedArticle
+from make_embedding import transform
+from proto.proto_io import read_sentences, write_sentences
 
 
-class EmbeddedArticle:
-    def __init__(self, newsArticle: NewsArticle, embedding: List[float]):
-        self.embedding = embedding
-        self.sentences = newsArticle.sentences
-        self.id = newsArticle.id
-
-    def as_json_dict(self):
-        return {
-            "id": self.id,
-            "sentences": self.sentences,
-            "embedding": self.embedding,
-        }
-
-
-def scan_for_untransformed_sentence_files():
+def scan_for_untransformed_sentence_files(out_dir_base_path: str, embedding_fn_pattern: str):
     ret = []
 
     for dir in os.listdir(out_dir_base_path):
@@ -53,71 +34,31 @@ def scan_for_untransformed_sentence_files():
     return ret
 
 
-def read_news_article_file(fp) -> [NewsArticle]:
-    articles = []
-    with open(fp, "r") as f:
-        js_obj = json.load(f)
-        for article in js_obj:
-            articles.append(NewsArticle(id=article["id"], sentences=article["sentences"]))
-
-    return articles
-
-
-def transform(articles: List[NewsArticle]) -> List[EmbeddedArticle]:
-    """
-    Transforms a list articles sentences to a list of articles sentences embeddings
-    input shape -> number of news articles * number of sentences in articles
-    output shape -> number of news articles * sumber of sentences in articles * embeding size
-
-    :param sentences:
-    :return:
-    """
-
-    embeddedArticles = []
-
-    bert = BertModel.from_pretrained("bert-base-uncased").cuda()
-    tokenizer = BertTokenizerFast.from_pretrained("bert-base-uncased")
-
-    # max_sentence_size = max([max([len(x) for x in a.sentences]) for a in articles if len(a.sentences) > 0])
-    max_sentence_size = 512
-
-    for news_article in tqdm(articles):
-        try:
-            sentences = news_article.sentences
-            if len(sentences) < 2:
-                embeddedArticles.append(EmbeddedArticle(news_article, []))
-                continue
-
-            tokenized = tokenizer(sentences,
-                                  padding='max_length', max_length=max_sentence_size, truncation=True,
-                                  return_tensors="pt")
-
-            input_ids = tokenized["input_ids"].cuda()
-            attention_mask = tokenized["attention_mask"].cuda()
-            with torch.no_grad():
-                v, out = bert(input_ids=input_ids, attention_mask=attention_mask, return_dict=False)
-                asList = out.cpu().tolist()
-                embeddedArticles.append(EmbeddedArticle(news_article, asList))
-        except Exception as e:
-            print(input_ids)
-            print(attention_mask)
-            print(news_article.id)
-            print(e)
-            raise e
-
-    return embeddedArticles
-
-
 def main():
-    to_transform = scan_for_untransformed_sentence_files()
+    datasett = KaggleDataset()
+    datasett.build_and_save_embeddings()
+    # to_transform = scan_for_untransformed_sentence_files(out_dir_base_path)
 
-    for ssplit_fp, out_fp in to_transform:
-        articles = read_news_article_file(ssplit_fp)
-        embeddings = transform(articles)
-        embeddings = list(map(lambda x: x.as_json_dict(), embeddings))
+    # for ssplit_fp, out_fp in to_transform:
+    #     articles = read_news_article_file(ssplit_fp)
+    #     embeddings = transform(articles)
+    #     embeddings = list(map(lambda x: x.as_json_dict(), embeddings))
+    #
+    #     with open(out_fp, "w") as f:
+    #         json.dump(embeddings, f)
 
-        with open(out_fp, "w") as f:
-            json.dump(embeddings, f)
+
+def main2_bogaloo():
+    pass
+    # read_sentences(out_dir_base_path + "kaggle/sentences_proto.bin")
+
+    # na = NewsArticle(1, "t", 1, ["aaaaa", "bbbb"])
+    # eba = EmbeddedArticle(na, [[1, 2, 3], [4, 5, 6]])
+    # proto = eba.as_proto_obj()
+    # write_sentences(out_dir_base_path + "kaggle/embeddings_proto.bin", proto)
+    #
 
 
-main()
+if __name__ == '__main__':
+    # main()
+    main()
