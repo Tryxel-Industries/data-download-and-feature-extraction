@@ -3,6 +3,7 @@ package no.tryxelindustries.java_feature_gen;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.stanford.nlp.ling.CoreLabel;
 import no.tryxelindustries.java_feature_gen.datasets.readers.Kaggle;
+import no.tryxelindustries.java_feature_gen.entitys.ProtoBuilder;
 import no.tryxelindustries.java_feature_gen.enums.Feature;
 import no.tryxelindustries.java_feature_gen.features.FeatureResult;
 import no.tryxelindustries.java_feature_gen.features.GeneratorFactory;
@@ -20,20 +21,33 @@ public class Main {
     public static  String      txt2      = "U.S.A yeaahhh!!!!. i am confident that Bob rigged the ugandan election last tuesday. is this — real??????. really 100 000 dollas tells me no way any1 cold do that 360 kick-flip?. thight-lipped! .idk means I dont know - mine my opinion you yours opinion. if this ain't “posible” \"to\" 'tokenize' (good) for organizations e.g. c.i.a. nsa, federal bureau of investigation and other. Earlier today Josh Caplan at The Gateway Pundit posted on Gloria Allred\u2019s last ditch effort to swing the Alabama senate race to Democrat Doug Moore.\n\nWE CALLED IT! Gloria Allred Accuser **ADMITS** She Tampered With Roy Moore\u2019s Yearbook \u2018Signature\u2019 ";//(VIDEO)\n\nAllred dragged out discredited Moore accuser Beverly Nelson to Good Morning America to hit Judge Roy Moore one last time before Tuesday\u2019s vote.\n\nNelson admitted on ABC\u2019s \u201cGood Morning America\u201d on Friday that she tampered with and added \u201cnotes\u201d to what she claims is Moore\u2019s signature inside her yearbook.\n\nTRENDING: In Ukraine, \u201cThere\u2019s Something Happening There\u201d\n\nThe story is solid. The statements were made by Beverly Nelson this morning. The yearbook signature has been discredited as reported by ABC\u2019s GMA this morning.\n\nBut after we posted the story this morning Facebook shut down our story.\n\nThe far left website Politifact said our story was not accurate and Facebook the shut it down. No one will be able to see our story on Facebook.\n\nBreitbart wrote a similar post and it was also blocked by Facebook.\n\nFacebook is TRASH. pic.twitter.com/KHy5Qfykg6 \u2014 Gab: Free Speech Social Network (@getongab) December 8, 2017\n\nSo Facebook shut down the story on Judge Roy Moore\u2019s accuser.\n\nFacebook is picking sides.";
 
     public static void main(String[] args) {
-        var t0 = System.nanoTime();
-        testKaggleGen();
-        var t1 = System.nanoTime();
+        testProtoB();
 
-        Duration runtime = Duration.ofNanos(t1 - t0);
-        dbl.log("runtime: ",
-                runtime.toSecondsPart(),
-                " seconds ",
-                runtime.toMinutesPart(),
-                " minutes ",
-                runtime.toHoursPart(),
-                " hours");
+//        var t0 = System.nanoTime();
+//        testKaggleGen();
+//        var t1 = System.nanoTime();
+//
+//        Duration runtime = Duration.ofNanos(t1 - t0);
+//        dbl.log("runtime: ",
+//                runtime.toSecondsPart(),
+//                " seconds ",
+//                runtime.toMinutesPart(),
+//                " minutes ",
+//                runtime.toHoursPart(),
+//                " hours");
+    }
+
+    public static void testProtoB() {
+        DataProcessing processing = new DataProcessing(false);
+        Kaggle kg = new Kaggle();
+        List<NewsEntry> kaggleEntries = kg.readDataset();
+        var test_l = kaggleEntries.subList(0, 1);
 
 
+        dbl.log("Processing news entries");
+        test_l.parallelStream().forEach(processing::processNewsEntry);
+
+        ProtoBuilder.writeSentencesToDisk("kaggle", test_l);
     }
 
     private static Pipeline getFeaturePipeline() {
