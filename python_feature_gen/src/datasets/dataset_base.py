@@ -6,6 +6,7 @@ from entitys import NewsArticle
 from make_embedding import transform
 from proto.news_dataset_embeddings_pb2 import DatasetEmbeddings
 from proto.proto_io import read_sentences, write_sentences
+from whitening import whiten_embeddings
 
 out_dir_base_path = "./../data_out/"
 sentences_fn = "sentences_proto.bin"
@@ -32,6 +33,7 @@ class DatasetBase:
 
     def build_and_save_embeddings(self):
         embedded_articles = transform(self.news_articles)
+
         embedded_transformed = [e.as_proto_obj() for e in embedded_articles]
 
         datasett = DatasetEmbeddings()
@@ -39,6 +41,16 @@ class DatasetBase:
         datasett.news_entries.extend(embedded_transformed)
 
         write_sentences(self.embedding_fp, datasett)
+
+        whitened = whiten_embeddings(embedded_articles)
+
+        datasett = DatasetEmbeddings()
+        datasett.dataset_name = self.dataset_name
+
+        whitened_transformed = [e.as_proto_obj() for e in whitened]
+        datasett.news_entries.extend(whitened_transformed)
+
+        write_sentences(self.embedding_fp + ".whitened", datasett)
 
     # @abstractmethod
     def _parse_dataset_files(self) -> List[NewsArticle]:

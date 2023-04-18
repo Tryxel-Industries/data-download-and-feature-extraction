@@ -25,10 +25,3 @@ def read_sentences(write_path: str) -> List[NewsArticle]:
 def write_sentences(write_path: str, datasett: DatasetEmbeddings):
     with open(write_path, "wb") as f:
         f.write(datasett.SerializeToString())
-
-    test_r = DatasetEmbeddings()
-    with open(write_path, "rb") as f:
-        test_r.ParseFromString(f.read())
-
-    print("check")
-    print(test_r)
