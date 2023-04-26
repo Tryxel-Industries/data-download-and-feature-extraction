@@ -19,6 +19,7 @@ class whitener:
         
         self.mu_vec = self.mu_vec = (self.n/(self.n + new_n)) * self.mu_vec + (new_n/(self.n + new_n)) * new_mu
         self.covariance_matrix = (self.n/(self.n + new_n)) * self.covariance_matrix + (new_n/(self.n + new_n)) * new_cov
+        self.n += new_n
 
     #NB: antar at alle embedded articles allerede har blitt kjørt gjennom update!
     def whiten_embeddings(self, embedded_articles: List[EmbeddedArticle], desired_dims: int = None) -> np.array:
