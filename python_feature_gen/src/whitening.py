@@ -22,7 +22,7 @@ class whitener:
         self.n += new_n
 
     #NB: antar at alle embedded articles allerede har blitt kjørt gjennom update!
-    def whiten_embeddings(self, embedded_articles: List[EmbeddedArticle], desired_dims: int = None) -> np.array:
+    def whiten_embeddings(self, embedded_articles: List[EmbeddedArticle], desired_dims: int = None) -> List[EmbeddedArticle]:
         embeddings = np.array([x for x in [j for y in embedded_articles for j in y.embeddings]])
         desired_dims = embeddings.shape[1] if (
                 desired_dims is None or desired_dims < 0 or desired_dims > embeddings.shape[1]) else desired_dims
@@ -31,6 +31,9 @@ class whitener:
         # cov = np.cov(embeddings.T)
         u, s, vh = np.linalg.svd(self.covariance_matrix)
         w = np.dot(u, np.diag(1 / np.sqrt(s)))
-        op = w.T @ self.covariance_matrix @ w
+        # op = w.T @ self.covariance_matrix @ w
         # print(len(op[op > 0.9]))
-        return (embeddings - self.mu_vec) @ w[:, :desired_dims]
+        for article in embedded_articles:
+            article.embeddings = list(map(lambda x: (x - self.mu_vec) @ w[:, :desired_dims], article.embeddings) )
+        return embedded_articles
+
