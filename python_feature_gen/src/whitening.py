@@ -34,17 +34,7 @@ class whitener:
         # op = w.T @ self.covariance_matrix @ w
         # print(len(op[op > 0.9]))
         for article in embedded_articles:
-            article.embeddings = (article.embeddings - self.mu_vec) @ w[:, :desired_dims]
+            article.embeddings = (article.embeddings - self.mu_vec) @ w[:, :desired_dims]z
         return embedded_articles
 
 # main()
-na = NewsArticle(1, "t", 1, ["aaaaa", "bbbb"])
-eba = EmbeddedArticle(na, [[1, 2, 3], [4, 5, 6]])
-embs = [eba, EmbeddedArticle(na, [[6, 53, 1], [2, 123, 321]])]
-whitener_obj = whitener(3)
-whitener_obj.update(embs)
-hhgg = whitener_obj.whiten_embeddings(embs)
-print(whitener_obj.covariance_matrix)
-print(whitener_obj.mu_vec)
-print(whitener_obj.n)
-print("bb")
