@@ -34,7 +34,7 @@ class whitener:
         # op = w.T @ self.covariance_matrix @ w
         # print(len(op[op > 0.9]))
         for article in embedded_articles:
-            article.embeddings = (article.embeddings - self.mu_vec) @ w[:, :desired_dims]z
+            article.embeddings = (article.embeddings - self.mu_vec) @ w[:, :desired_dims]
         return embedded_articles
 
 # main()
