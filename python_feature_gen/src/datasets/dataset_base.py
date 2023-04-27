@@ -1,12 +1,12 @@
 import os.path
 from abc import abstractmethod
-from typing import List
+from typing import List, Optional
 
 from entitys import NewsArticle
 from make_embedding import transform
 from proto.news_dataset_embeddings_pb2 import DatasetEmbeddings
 from proto.proto_io import read_sentences, write_sentences
-from whitening import whiten_embeddings
+from whitening import Whitener
 
 out_dir_base_path = "./../data_out/"
 sentences_fn = "sentences_proto.bin"
@@ -31,8 +31,11 @@ class DatasetBase:
     def is_sentences_present(self):
         return os.path.isfile(self.sentence_fp)
 
-    def build_and_save_embeddings(self):
-        embedded_articles = transform(self.news_articles)
+    def build_and_save_embeddings(self, num_to_save: Optional[int], whitening_num_dims: int):
+        if num_to_save is None:
+            embedded_articles = transform(self.news_articles)
+        else:
+            embedded_articles = transform(self.news_articles[:num_to_save])
 
         embedded_transformed = [e.as_proto_obj() for e in embedded_articles]
 
@@ -42,7 +45,9 @@ class DatasetBase:
 
         write_sentences(self.embedding_fp, datasett)
 
-        whitened = whiten_embeddings(embedded_articles)
+        wth = Whitener(len(embedded_articles[0].embeddings[0]))
+        wth.update(embedded_articles)
+        whitened = wth.whiten_embeddings(embedded_articles, desired_dims=whitening_num_dims)
 
         datasett = DatasetEmbeddings()
         datasett.dataset_name = self.dataset_name
