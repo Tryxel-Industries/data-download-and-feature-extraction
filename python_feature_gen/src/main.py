@@ -36,7 +36,7 @@ def scan_for_untransformed_sentence_files(out_dir_base_path: str, embedding_fn_p
 
 def main():
     datasett = KaggleDataset()
-    datasett.build_and_save_embeddings(num_to_save=500, whitening_num_dims=256)
+    datasett.build_and_save_embeddings(num_to_save=None, whitening_num_dims=256)
     # to_transform = scan_for_untransformed_sentence_files(out_dir_base_path)
 
     # for ssplit_fp, out_fp in to_transform:

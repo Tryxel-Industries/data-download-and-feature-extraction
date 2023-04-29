@@ -1,4 +1,5 @@
 import json
+import math
 import os
 from typing import List
 
@@ -26,24 +27,36 @@ def transform(articles: List[NewsArticle]) -> List[EmbeddedArticle]:
 
     # max_sentence_size = max([max([len(x) for x in a.sentences]) for a in articles if len(a.sentences) > 0])
     max_sentence_size = 512
+    max_s_num = 100
 
     for news_article in tqdm(articles):
+        article_embeddings = []
         try:
             sentences = news_article.sentences
-            if len(sentences) < 2:
-                embeddedArticles.append(EmbeddedArticle(news_article, []))
-                continue
+            n_iters = math.ceil(len(sentences) / max_s_num)
 
-            tokenized = tokenizer(sentences,
-                                  padding='max_length', max_length=max_sentence_size, truncation=True,
-                                  return_tensors="pt")
+            for n in range(n_iters):
 
-            input_ids = tokenized["input_ids"].cuda()
-            attention_mask = tokenized["attention_mask"].cuda()
-            with torch.no_grad():
-                v, out = bert(input_ids=input_ids, attention_mask=attention_mask, return_dict=False)
-                asList = out.cpu().tolist()
-                embeddedArticles.append(EmbeddedArticle(news_article, asList))
+                if n == n_iters - 1:
+                    to_transform = sentences[n * max_s_num:]
+                else:
+                    to_transform = sentences[n * max_s_num:(n + 1) * max_s_num]
+
+                # if len(sentences) < 2:
+                #     embeddedArticles.append(EmbeddedArticle(news_article, []))
+                #     continue
+
+                tokenized = tokenizer(to_transform,
+                                      padding='max_length', max_length=max_sentence_size, truncation=True,
+                                      return_tensors="pt")
+
+                input_ids = tokenized["input_ids"].cuda()
+                attention_mask = tokenized["attention_mask"].cuda()
+                with torch.no_grad():
+                    v, out = bert(input_ids=input_ids, attention_mask=attention_mask, return_dict=False)
+                    asList = out.cpu().tolist()
+                    article_embeddings = [*article_embeddings, *asList]
+            embeddedArticles.append(EmbeddedArticle(news_article, article_embeddings))
         except Exception as e:
             print(input_ids)
             print(attention_mask)

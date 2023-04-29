@@ -22,6 +22,8 @@ public class Main {
 
     public static void main(String[] args) {
         testProtoB();
+//        inspect_dataset_id();
+//        dupe_test();
 
 //        var t0 = System.nanoTime();
 //        testKaggleGen();
@@ -41,13 +43,60 @@ public class Main {
         DataProcessing processing = new DataProcessing(false);
         Kaggle kg = new Kaggle();
         List<NewsEntry> kaggleEntries = kg.readDataset();
-        var test_l = kaggleEntries.subList(0, 1);
+//        var test_l = kaggleEntries.subList(0, 1);
+        var test_l = kaggleEntries;
 
 
         dbl.log("Processing news entries");
         test_l.parallelStream().forEach(processing::processNewsEntry);
 
         ProtoBuilder.writeSentencesToDisk("kaggle", test_l);
+    }
+
+    public static void dupe_test() {
+        DataProcessing processing = new DataProcessing(false);
+        Kaggle kg = new Kaggle();
+        List<NewsEntry> kaggleEntries = kg.readDataset();
+        HashSet<String> hashSet = new HashSet<>();
+
+        kaggleEntries.parallelStream().forEach(processing::processNewsEntry);
+
+        int collision_counter = 0;
+        int non_collision_counter = 0;
+        for (NewsEntry entry : kaggleEntries) {
+            for (String sentence : entry.getSentences()) {
+                if (hashSet.contains(sentence)) {
+                    collision_counter += 1;
+                    System.out.printf("colission number: %s\n", collision_counter);
+                } else {
+                    non_collision_counter += 1;
+                    hashSet.add(sentence);
+                }
+            }
+        }
+
+        System.out.printf("num not colision: %s  num collisions: %s, fraction: %s\n",
+                          non_collision_counter,
+                          collision_counter,
+                          collision_counter / non_collision_counter);
+
+
+    }
+
+    public static void inspect_dataset_id() {
+        DataProcessing processing = new DataProcessing(false);
+        Kaggle kg = new Kaggle();
+        List<NewsEntry> kaggleEntries = kg.readDataset();
+        int targetId = 120;
+        var test_l = kaggleEntries.stream().filter(newsEntry -> newsEntry.id == targetId).toList();
+
+        if (test_l.size() > 0) {
+            NewsEntry article = test_l.get(0);
+            System.out.printf("article id: %s\n", article.id);
+            System.out.printf("article title: %s\n", article.title);
+            System.out.printf("article text: \n%s\n", article.rawText);
+        }
+
     }
 
     private static Pipeline getFeaturePipeline() {

@@ -11,13 +11,20 @@ def read_sentences(write_path: str) -> List[NewsArticle]:
         dataset.ParseFromString(f.read())
 
     news_articles = []
+    zero_sentence_articles = 0
     for news_article in dataset.news_entries:
         sentences = []
         for sentence in news_article.sentences:
             sentences.append(sentence)
+        if len(sentences) == 0:
+            zero_sentence_articles += 1
+            continue
         article = NewsArticle(id=news_article.id, label=news_article.label, publish_date=news_article.publish_date,
                               sentences=sentences)
         news_articles.append(article)
+
+    if zero_sentence_articles > 0:
+        print(f"{zero_sentence_articles} articles had no sentences")
 
     return news_articles
 

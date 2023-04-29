@@ -35,5 +35,12 @@ class Whitener:
         # op = w.T @ self.covariance_matrix @ w
         # print(len(op[op > 0.9]))
         for article in embedded_articles:
-            article.embeddings = (article.embeddings - self.mu_vec) @ w[:, :desired_dims]
+            try:
+                article.embeddings = (article.embeddings - self.mu_vec) @ w[:, :desired_dims]
+            except Exception as e:
+                print("embed: ", article.embeddings)
+                print("sentences: ", article.sentences)
+                print(article)
+                print("article id: ", article.id)
+                print(e)
         return embedded_articles
