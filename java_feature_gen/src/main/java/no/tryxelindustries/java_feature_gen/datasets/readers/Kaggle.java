@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class Kaggle extends DatasetReader {
 
     @Override
-    protected String getDatasetName() {
+    public String getDatasetName() {
         return "kaggle";
     }
 
@@ -40,7 +40,9 @@ public class Kaggle extends DatasetReader {
             scanner.nextLine();
 
             while (scanner.hasNextLine()) {
-                int id = scanner.nextInt();
+//                int id = scanner.nextInt();
+                int id = this.getNextId();
+
                 String title = this.stripSurroundingQuotes(scanner.next());
                 String author = scanner.next();
                 String text = this.stripSurroundingQuotes(scanner.next());

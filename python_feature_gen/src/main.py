@@ -6,6 +6,8 @@ import torch
 from tqdm import tqdm
 from transformers import BertConfig, BertModel, BertTokenizerFast
 
+from datasets.buzfeed_dataset import BuzfeedDataset
+from datasets.fnn_dataset import FNNDataset
 from datasets.kaggle_dataset import KaggleDataset
 from entitys import NewsArticle, EmbeddedArticle
 from make_embedding import transform
@@ -35,8 +37,12 @@ def scan_for_untransformed_sentence_files(out_dir_base_path: str, embedding_fn_p
 
 
 def main():
-    datasett = KaggleDataset()
-    datasett.build_and_save_embeddings(num_to_save=None, whitening_num_dims=256)
+    # datasett = KaggleDataset()
+    datasett = BuzfeedDataset()
+    datasett.build_and_save_embeddings(num_to_save=5000, whitening_num_dims=256)
+
+    # datasett = FNNDataset()
+    # datasett.build_and_save_embeddings(num_to_save=None, whitening_num_dims=256)
     # to_transform = scan_for_untransformed_sentence_files(out_dir_base_path)
 
     # for ssplit_fp, out_fp in to_transform:

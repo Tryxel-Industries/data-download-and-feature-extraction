@@ -20,6 +20,13 @@ public abstract class DatasetReader {
 
     private final String semanticFeaturePattern = "semantic_features_%s.json";
 
+    private int id_counter = 0;
+
+    protected int getNextId() {
+        int id = id_counter;
+        id_counter += 1;
+        return id;
+    }
 
     protected DatasetReader() {
         File outDir = getDatasetOutDir();
@@ -86,7 +93,7 @@ public abstract class DatasetReader {
         return new File(rawBasePath, getDatasetName());
     }
 
-    protected abstract String getDatasetName();
+    public abstract String getDatasetName();
 
 
     public abstract List<NewsEntry> readDataset();
