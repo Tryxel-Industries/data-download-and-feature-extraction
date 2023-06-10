@@ -7,18 +7,17 @@ import no.tryxelindustries.java_feature_gen.DebugLogger;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 public abstract class FeatureGeneratorBase {
     private static final Path lexiconBasePath = Path.of("./lexicons");
 
     protected static DebugLogger dbl = new DebugLogger(true);
 
-    protected List<LexiconEntry> readLexiconFile(String fileName) {
-        List<LexiconEntry> lexiconEntries = new ArrayList<>();
+    protected List<String> readFile(String fileName) {
+        List<String> lines = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             while (true) {
@@ -26,7 +25,8 @@ public abstract class FeatureGeneratorBase {
                 if (line == null) {
                     break;
                 } else {
-                    lexiconEntries.add(new LexiconEntry(line));
+                    lines.add(line);
+
                 }
             }
         } catch (FileNotFoundException e) {
@@ -35,15 +35,21 @@ public abstract class FeatureGeneratorBase {
             throw new RuntimeException(e);
         }
 
-        return lexiconEntries;
+        return lines;
     }
 
-    protected FeatureResult getTermFrequency(CoreDocument document, List<LexiconEntry> terms) {
+    protected List<LexiconEntry> readLexiconFile(String fileName) {
+        var lines = readFile(fileName);
+        return lines.stream().map(LexiconEntry::new).collect(Collectors.toList());
+    }
+
+
+    protected FeatureResult getTermCount(CoreDocument document, List<LexiconEntry> terms) {
         // a sexy O(A*B) solution, its not bad if you recognize it
         int termCount = 0;
         List<CoreLabel> tokens = document.tokens();
 
-        List<String> annotationMap = new ArrayList<>(Collections.nCopies(tokens.size(), "False"));
+        List<String> annotationMap = new ArrayList<>(Collections.nCopies(tokens.size(), "-"));
 
         for (int i = 0; i < terms.size(); i++) {
             LexiconEntry term = terms.get(i);
@@ -69,7 +75,7 @@ public abstract class FeatureGeneratorBase {
                     }
                     if (doMatch) {
                         for (int k = skipIndex - 1; k >= 0; k--) {
-                            annotationMap.set(j - k, "True");
+                            annotationMap.set(j - k, term.label);
                             termCount += 1;
                         }
                     }
@@ -79,7 +85,7 @@ public abstract class FeatureGeneratorBase {
                     String word = tokens.get(j).word();
                     if (word.equals(term.baseWord)) {
                         termCount += 1;
-                        annotationMap.set(j, "True");
+                        annotationMap.set(j, term.label);
                     }
                 }
             }

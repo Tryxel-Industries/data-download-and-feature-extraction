@@ -23,7 +23,7 @@ public class GeneratorFactory {
             case QUOTATION_MARKS -> new QuotationCount();
             case WORD_COUNT -> new WordCount();
             case DIVISIVE_TOPICS -> null;
-            case EFFECT_WORD_SUM -> null;
+            case EFFECT_WORD_SUM -> new EffectWordsSummedValue();
             case CAPITALIZED_WORDS -> new CapitalizedWordCount();
             case INTENSIFIER_ADVERBS -> null;
             case EMPHASIS -> new MPQAEmphasisTermFrequency();

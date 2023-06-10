@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LexiconEntry {
+
+    public final         String       label;
     private static final boolean      includeSeparators = false;
     public final         String       baseWord;
     public final         List<String> splitWord         = new ArrayList<>();
@@ -27,6 +29,25 @@ public class LexiconEntry {
     }
 
     public LexiconEntry(String baseWord) {
+        this.label = "True";
+        this.baseWord = baseWord;
+        if (baseWord.contains("-")) {
+            addMultiword(baseWord, "-");
+            this.isMultiword = true;
+        } else if (baseWord.contains(" ")) {
+            addMultiword(baseWord, " ");
+            this.isMultiword = true;
+        } else if (baseWord.contains("_")) {
+            addMultiword(baseWord, "_");
+            this.isMultiword = true;
+        } else {
+            isMultiword = false;
+            splitWord.add(baseWord);
+        }
+    }
+
+    public LexiconEntry(String baseWord, String label) {
+        this.label = label;
         this.baseWord = baseWord;
         if (baseWord.contains("-")) {
             addMultiword(baseWord, "-");

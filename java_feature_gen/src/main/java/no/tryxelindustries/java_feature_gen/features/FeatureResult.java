@@ -7,7 +7,7 @@ import java.util.List;
 public class FeatureResult {
     @JsonIgnore
     public final List<String> annotation;
-    public final double       featureValue;
+    public       double       featureValue;
 
     public FeatureResult(List<String> annotation, double featureValue) {
         this.annotation = annotation;

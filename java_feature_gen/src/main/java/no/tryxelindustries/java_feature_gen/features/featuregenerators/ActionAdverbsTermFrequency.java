@@ -20,6 +20,6 @@ public class ActionAdverbsTermFrequency extends FeatureGeneratorBase {
 
     @Override
     public FeatureResult getFeatureValue(CoreDocument document) {
-        return this.getTermFrequency(document, lexicon);
+        return this.getTermCount(document, lexicon);
     }
 }

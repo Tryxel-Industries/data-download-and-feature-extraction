@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 
 public abstract class MPQAArguingGeneratorBase extends FeatureGeneratorBase {
 
-    protected static DebugLogger dbl = new DebugLogger(true);
 
     protected static final String[] wordClassFiles = {
             "lexicons/MPQAA/arg_lex/modals.tff",
