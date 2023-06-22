@@ -3,19 +3,16 @@ package no.tryxelindustries.java_feature_gen;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.stanford.nlp.ling.CoreLabel;
 import no.tryxelindustries.java_feature_gen.datasets.DatasetReader;
-import no.tryxelindustries.java_feature_gen.datasets.readers.Buzzfeed;
-import no.tryxelindustries.java_feature_gen.datasets.readers.FakeNewsNet;
-import no.tryxelindustries.java_feature_gen.datasets.readers.Kaggle;
+import no.tryxelindustries.java_feature_gen.datasets.readers.*;
 import no.tryxelindustries.java_feature_gen.entitys.ProtoBuilder;
 import no.tryxelindustries.java_feature_gen.enums.Feature;
 import no.tryxelindustries.java_feature_gen.features.FeatureResult;
 import no.tryxelindustries.java_feature_gen.features.GeneratorFactory;
 import no.tryxelindustries.java_feature_gen.entitys.NewsEntry;
-import no.tryxelindustries.java_feature_gen.features.featuregenerators.EffectWordsSummedValue;
+import no.tryxelindustries.java_feature_gen.features.featuregenerators.SubjectivityBase;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.*;
 
 public class Main {
@@ -27,26 +24,41 @@ public class Main {
     public static void main(String[] args) {
 //        Main.testSimpleFeatureGen();
 
-        var dataset = new Buzzfeed();
-//        var dataset = new Buzzfeed();
-//        var dataset = new Kaggle();
-//        var dataset = new FakeNewsNet();
+//        {
+//            var dataset = new Buzzfeed();
+//            gen_dataset(dataset);
+//        }
+//
+//        {
+//            var dataset = new Kaggle();
+//            gen_dataset(dataset);
+//        }
 
-        List<NewsEntry> datasetEntries = dataset.readDataset();
-        DataProcessing processing = new DataProcessing(false);
+        {
+            var dataset = new Gosipcop();
+            gen_dataset(dataset);
+        }
 
-        var testEntry = datasetEntries.get(0);
-
-        processing.processNewsEntry(testEntry);
-
-        var test_gen = new EffectWordsSummedValue();
-        var result = test_gen.getFeatureValue(testEntry.document);
+        {
+            var dataset = new Politifact();
+            gen_dataset(dataset);
+        }
 
 
-        util.showTextWithAnno(testEntry.document.tokens().stream().map(CoreLabel::word).toList(),
-                              result.annotation);
+//        List<NewsEntry> datasetEntries = dataset.readDataset();
+//        DataProcessing processing = new DataProcessing(false);
+//
+//        var testEntry = datasetEntries.get(0);
+//        processing.processNewsEntry(testEntry);
+//
+//        var test_gen = new StrongSubNegative();
+//        var result = test_gen.getFeatureValue(testEntry.document);
+////
+//        util.showTextWithAnno(testEntry.document.tokens().stream().map(CoreLabel::word).toList(),
+//                              result.annotation);
+//        System.out.printf("the feature count is %s\n", result.featureValue);
+//
 
-        System.out.printf("the feature count is %s\n", result.featureValue);
 //        dataset.readDataset();
 
 
@@ -130,20 +142,27 @@ public class Main {
     }
 
     private static Pipeline getFeaturePipeline() {
-        List<Feature> featuresUsed = new ArrayList<>(List.of(Feature.FIRST_PERSON_PRONOUNS,
-                                                             Feature.SECOND_PERSON_PRONOUNS,
-                                                             Feature.NUMBERS,
-                                                             Feature.EXCLAMATION_AND_QUESTION_MARKS,
-                                                             Feature.QUOTATION_MARKS,
-                                                             Feature.WORD_COUNT,
-                                                             Feature.CAPITALIZED_WORDS,
-                                                             Feature.EMPHASIS,
-                                                             Feature.RHETORICAL_QUESTIONS,
-                                                             Feature.GENERALISATION,
-                                                             Feature.INCONSISTENCY,
-                                                             Feature.CONDITIONALS,
-                                                             Feature.NECESSITY));
-
+        List<Feature> featuresUsed = new ArrayList<>(List.of(
+                Feature.SWEAR_WORDS,
+                Feature.FIRST_PERSON_PRONOUNS,
+                Feature.SECOND_PERSON_PRONOUNS,
+                Feature.ACTION_ADVERBS,
+                Feature.STRONGLY_SUBJECTIVE_NEG,
+                Feature.STRONGLY_SUBJECTIVE_POS,
+                Feature.STRONGLY_SUBJECTIVE,
+                Feature.NUMBERS,
+                Feature.EXCLAMATION_AND_QUESTION_MARKS,
+                Feature.QUOTATION_MARKS,
+                Feature.WORD_COUNT,
+                Feature.EFFECT_WORD_SUM,
+                Feature.CAPITALIZED_WORDS,
+                Feature.EMPHASIS,
+                Feature.RHETORICAL_QUESTIONS,
+                Feature.GENERALISATION,
+                Feature.INCONSISTENCY,
+                Feature.CONDITIONALS,
+                Feature.NECESSITY,
+                Feature.FK_GRADE_LEVEL));
         Pipeline pipe = new Pipeline(featuresUsed);
         return pipe;
     }
@@ -163,6 +182,7 @@ public class Main {
         datasetReader.writeDatasetEntries(res);
 
         ProtoBuilder.writeSentencesToDisk(datasetReader.getDatasetName(), res);
+        System.out.printf("num res is %s\n", res.size());
         var resEntry = res.get(0);
         dbl.log(resEntry);
         dbl.log(resEntry.getResultMap());
@@ -196,10 +216,15 @@ public class Main {
 
         List<Feature> featuresUsed = new ArrayList<>(List.of(Feature.FIRST_PERSON_PRONOUNS,
                                                              Feature.SECOND_PERSON_PRONOUNS,
+                                                             Feature.ACTION_ADVERBS,
+                                                             Feature.STRONGLY_SUBJECTIVE_NEG,
+                                                             Feature.STRONGLY_SUBJECTIVE_POS,
+                                                             Feature.STRONGLY_SUBJECTIVE,
                                                              Feature.NUMBERS,
                                                              Feature.EXCLAMATION_AND_QUESTION_MARKS,
                                                              Feature.QUOTATION_MARKS,
                                                              Feature.WORD_COUNT,
+                                                             Feature.EFFECT_WORD_SUM,
                                                              Feature.CAPITALIZED_WORDS,
                                                              Feature.EMPHASIS,
                                                              Feature.RHETORICAL_QUESTIONS,

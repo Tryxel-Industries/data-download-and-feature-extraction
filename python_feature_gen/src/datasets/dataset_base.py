@@ -31,7 +31,7 @@ class DatasetBase:
     def is_sentences_present(self):
         return os.path.isfile(self.sentence_fp)
 
-    def build_and_save_embeddings(self, num_to_save: Optional[int], whitening_num_dims: int):
+    def build_and_save_embeddings(self, num_to_save: Optional[int], whitening_num_dims: [int]):
         if num_to_save is None:
             embedded_articles = transform(self.news_articles)
         else:
@@ -47,15 +47,17 @@ class DatasetBase:
 
         wth = Whitener(len(embedded_articles[0].embeddings[0]))
         wth.update(embedded_articles)
-        whitened = wth.whiten_embeddings(embedded_articles, desired_dims=whitening_num_dims)
 
-        datasett = DatasetEmbeddings()
-        datasett.dataset_name = self.dataset_name
+        for n in whitening_num_dims:
+            whitened = wth.whiten_embeddings(embedded_articles, desired_dims=n)
 
-        whitened_transformed = [e.as_proto_obj() for e in whitened]
-        datasett.news_entries.extend(whitened_transformed)
+            datasett = DatasetEmbeddings()
+            datasett.dataset_name = self.dataset_name
 
-        write_sentences(self.embedding_fp + ".whitened", datasett)
+            whitened_transformed = [e.as_proto_obj() for e in whitened]
+            datasett.news_entries.extend(whitened_transformed)
+
+            write_sentences(self.embedding_fp + f".whitened_{n}", datasett)
 
     # @abstractmethod
     def _parse_dataset_files(self) -> List[NewsArticle]:

@@ -40,6 +40,7 @@ public class NumberCount extends FeatureGeneratorBase {
         }
 
 
-        return new FeatureResult(annotation, numberOfNumbers);
+        return new FeatureResult(annotation, (double) numberOfNumbers / document.tokens().size());
+//        return new FeatureResult(annotation, numberOfNumbers);
     }
 }

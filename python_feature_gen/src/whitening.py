@@ -1,3 +1,4 @@
+import copy
 from typing import List
 
 import numpy as np
@@ -23,8 +24,9 @@ class Whitener:
         self.n += new_n
 
     # NB: antar at alle embedded articles allerede har blitt kjørt gjennom update!
-    def whiten_embeddings(self, embedded_articles: List[EmbeddedArticle], desired_dims: int = None) -> List[
+    def whiten_embeddings(self, embedded_articles_in: List[EmbeddedArticle], desired_dims: int = None) -> List[
         EmbeddedArticle]:
+        embedded_articles = copy.deepcopy(embedded_articles_in)
         embeddings = np.array([x for x in [j for y in embedded_articles for j in y.embeddings]])
         desired_dims = embeddings.shape[1] if (
                 desired_dims is None or desired_dims < 0 or desired_dims > embeddings.shape[1]) else desired_dims

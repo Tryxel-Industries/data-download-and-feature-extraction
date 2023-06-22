@@ -31,6 +31,7 @@ public class CapitalizedWordCount extends FeatureGeneratorBase {
             }
         }
 
-        return new FeatureResult(annotation, numberOfCapWords);
+        return new FeatureResult(annotation, (double) numberOfCapWords / document.tokens().size());
+//        return new FeatureResult(annotation, numberOfCapWords);
     }
 }

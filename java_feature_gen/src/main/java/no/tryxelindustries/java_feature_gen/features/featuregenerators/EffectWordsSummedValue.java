@@ -53,6 +53,7 @@ public class EffectWordsSummedValue extends FeatureGeneratorBase {
         long nPos = featureRes.annotation.stream().filter(s -> s.equals("+Effect")).count();
         long nNeg = featureRes.annotation.stream().filter(s -> s.equals("-Effect")).count();
         featureRes.featureValue = nPos - nNeg;
+        featureRes.featureValue /= document.tokens().size();
         return featureRes;
     }
 }

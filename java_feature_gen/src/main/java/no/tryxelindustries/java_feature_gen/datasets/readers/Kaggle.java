@@ -40,7 +40,7 @@ public class Kaggle extends DatasetReader {
             scanner.nextLine();
 
             while (scanner.hasNextLine()) {
-//                int id = scanner.nextInt();
+                int article_id = scanner.nextInt();
                 int id = this.getNextId();
 
                 String title = this.stripSurroundingQuotes(scanner.next());

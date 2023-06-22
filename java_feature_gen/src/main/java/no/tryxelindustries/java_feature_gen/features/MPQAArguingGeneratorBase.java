@@ -113,7 +113,8 @@ public abstract class MPQAArguingGeneratorBase extends FeatureGeneratorBase {
             var matcher = pattern.matcher(document.text());
             termCount += (int) matcher.results().count();
         }
-        return new FeatureResult(annotationMap, termCount);
+        return new FeatureResult(annotationMap, (double) termCount / document.tokens().size());
+//        return new FeatureResult(annotationMap, termCount);
 
     }
 }

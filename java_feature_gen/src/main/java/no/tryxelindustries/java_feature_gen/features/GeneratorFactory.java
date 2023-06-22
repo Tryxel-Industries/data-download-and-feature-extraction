@@ -8,13 +8,15 @@ public class GeneratorFactory {
 
     public FeatureGeneratorBase getGenerator(Feature feature) {
         return switch (feature) {
-            case SWEAR_WORDS -> null;
+            case SWEAR_WORDS -> new SwearWords();
             case FIRST_PERSON_PRONOUNS -> new FirstPersonPronounsTermFrequency();
             case SECOND_PERSON_PRONOUNS -> new SecondPersonPronounsTermFrequency();
             case ACTION_ADVERBS -> new ActionAdverbsTermFrequency();
             case SUPERLATIVE_FORMS -> null;
             case COMPARATIVE_FORMS -> null;
-            case STRONGLY_SUBJECTIVE_WORDS -> null;
+            case STRONGLY_SUBJECTIVE_NEG -> new SubjectivityBase(SubjectivityBase.Runtype.StrongSubNeg);
+            case STRONGLY_SUBJECTIVE_POS -> new SubjectivityBase(SubjectivityBase.Runtype.StrongSubPos);
+            case STRONGLY_SUBJECTIVE -> new SubjectivityBase(SubjectivityBase.Runtype.StrongSub);
             case NEGATIONS -> null;
             case NEGATIVE_OPINION_WORDS -> null;
             case POSITIVE_OPINION_WORDS -> null;
@@ -32,6 +34,8 @@ public class GeneratorFactory {
             case INCONSISTENCY -> new MPQAInconsistencyTermFrequency();
             case CONDITIONALS -> new MPQAConditionalsTermFrequency();
             case NECESSITY -> new MPQANecessityTermFrequency();
+            case FK_GRADE_LEVEL -> new SyllableBase();
+
         };
     }
 }

@@ -75,7 +75,7 @@ public abstract class FeatureGeneratorBase {
                     }
                     if (doMatch) {
                         for (int k = skipIndex - 1; k >= 0; k--) {
-                            annotationMap.set(j - k, term.label);
+                            annotationMap.set(j - k - 1, term.label);
                             termCount += 1;
                         }
                     }
@@ -92,7 +92,8 @@ public abstract class FeatureGeneratorBase {
 
 
         }
-        return new FeatureResult(annotationMap, termCount);
+        return new FeatureResult(annotationMap, (double) termCount / document.tokens().size());
+//        return new FeatureResult(annotationMap, termCount);
 
     }
 

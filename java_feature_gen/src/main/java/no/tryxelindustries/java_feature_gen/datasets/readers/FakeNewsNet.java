@@ -12,12 +12,7 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class FakeNewsNet extends DatasetReader {
-
-    @Override
-    public String getDatasetName() {
-        return "fnn";
-    }
+public abstract class FakeNewsNet extends DatasetReader {
 
 
     private String stripSurroundingQuotes(String inp) {
@@ -28,14 +23,10 @@ public class FakeNewsNet extends DatasetReader {
         }
     }
 
-    private File getPolitifactDir() {
-        return new File(this.getDatasetInDir(), "politifact");
-    }
-
 
     @Data
     @AllArgsConstructor
-    private static class FNNPolitifactEntry {
+    public static class FNNPolitifactEntry {
         int id;
         public String url;
         public String text;
@@ -68,9 +59,21 @@ public class FakeNewsNet extends DatasetReader {
         }
     }
 
-    private List<FNNPolitifactEntry> getPolitifactEntries(String entry_dir_name) {
+    protected List<FNNPolitifactEntry> getPolitifactEntries(String entry_dir_name) {
 
-        File entry_type_dir = new File(this.getPolitifactDir(), entry_dir_name);
+        File entry_type_dir = new File(this.getDatasetInDir(), entry_dir_name);
+        List<FNNPolitifactEntry> politifactEntries = Stream.of(entry_type_dir.listFiles())
+                                                           .map(file -> new File(file, "news content.json"))
+                                                           .map(this::read_politifact_entry)
+                                                           .toList();
+
+
+        return politifactEntries;
+    }
+
+    protected List<FNNPolitifactEntry> getGossipCopEntries(String entry_dir_name) {
+
+        File entry_type_dir = new File(this.getDatasetInDir(), entry_dir_name);
         List<FNNPolitifactEntry> politifactEntries = Stream.of(entry_type_dir.listFiles())
                                                            .map(file -> new File(file, "news content.json"))
                                                            .map(this::read_politifact_entry)
@@ -81,15 +84,4 @@ public class FakeNewsNet extends DatasetReader {
     }
 
 
-    @Override
-    public List<NewsEntry> readDataset() {
-        Stream<NewsEntry> real_news = this.getPolitifactEntries("real")
-                                          .stream()
-                                          .map(entry -> entry.get_as_news_entry(1));
-        Stream<NewsEntry> false_news = this.getPolitifactEntries("fake")
-                                           .stream()
-                                           .map(entry -> entry.get_as_news_entry(0));
-
-        return Stream.concat(real_news, false_news).toList();
-    }
 }

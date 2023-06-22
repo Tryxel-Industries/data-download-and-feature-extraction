@@ -31,6 +31,7 @@ public class ExclamationsCount extends FeatureGeneratorBase {
             }
         }
 
-        return new FeatureResult(annotation, numberOfExclamations);
+        return new FeatureResult(annotation, (double) numberOfExclamations / document.tokens().size());
+//        return new FeatureResult(annotation, numberOfExclamations);
     }
 }
